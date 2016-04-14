@@ -29,9 +29,33 @@ struct node{
 	struct node *right;
 };
 
+struct node * deQ(struct node **Q, int *front) {
+	struct node *temp = Q[*front];
+	*front = (*front % 50) + 1;
+	return temp;
+}
 
+void enQ(struct node **Q, int *end, struct node *temp) {
+	Q[*end] = temp;
+	*end = *end % 50 + 1;
+}
 
 int* BSTRighttoLeftRows(struct node* root)
 {
-    return NULL;
+	if (!root)
+		return NULL;
+	int *arr = (int *)malloc(sizeof(int) * 50);
+	struct node **Q = (struct node **) malloc(sizeof(struct node *) * 50);
+	int index = 0;
+	int front = 0;
+	int end = 0;
+	while (front <= end) {
+		arr[index++] = root->data;
+		if (root->right)
+			enQ(Q, &end, root->right);
+		if (root -> left)
+			enQ(Q, &end, root->left);
+		root = deQ(Q, &front);
+	} 
+	return arr;
 }
