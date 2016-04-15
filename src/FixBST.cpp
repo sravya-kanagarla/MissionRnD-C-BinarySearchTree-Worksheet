@@ -32,6 +32,32 @@ struct node{
 	struct node *right;
 };
 
-void fix_bst(struct node *root){
+void findFaultNodes(struct node *root, struct node *node1, struct node *node2) {
+	if (root) {
+		if (root->left && root->data < root->left->data) {
+			if (node1 == NULL)
+				node1 = root -> left;
+			else
+				node2 = root -> left;
+		} 
+		findFaultNodes(root->left, node1, node2);
+		if (root->right && root->data > root->right->data) {
+			if (node1 == NULL)
+				node1 = root->right;
+			else
+				node2 = root->right;
+		}
+		findFaultNodes(root->right, node1, node2);
+	}
+}
 
+void fix_bst(struct node *root){
+	if (!root)
+		return;
+	struct node *node1 = NULL;
+	struct node *node2 = NULL;
+	findFaultNodes(root, node1, node2);
+	int temp = node1->data;
+	node1->data = node2->data;
+	node2->data = temp;
 }
