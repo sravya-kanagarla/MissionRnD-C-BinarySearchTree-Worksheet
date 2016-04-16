@@ -32,22 +32,19 @@ struct node{
 	struct node *right;
 };
 
-void findFaultNodes(struct node *root, struct node *node1, struct node *node2) {
+void findFaultNodes(struct node *root, struct node **node1, struct node **node2, struct node **node3, struct node **before) {
 	if (root) {
-		if (root->left && root->data < root->left->data) {
-			if (node1 == NULL)
-				node1 = root -> left;
+		findFaultNodes(root->left, node1, node2, node3, before);
+		if (*before && root->data < (*before)->data) {
+			if (!*node1) {
+				*node1 = *before;
+				*node3 = root;
+			}
 			else
-				node2 = root -> left;
-		} 
-		findFaultNodes(root->left, node1, node2);
-		if (root->right && root->data > root->right->data) {
-			if (node1 == NULL)
-				node1 = root->right;
-			else
-				node2 = root->right;
+				*node2 = root;
 		}
-		findFaultNodes(root->right, node1, node2);
+		*before = root;
+		findFaultNodes(root->right, node1, node2, node3, before);
 	}
 }
 
@@ -56,8 +53,13 @@ void fix_bst(struct node *root){
 		return;
 	struct node *node1 = NULL;
 	struct node *node2 = NULL;
-	findFaultNodes(root, node1, node2);
+	struct node *node3 = NULL;
+	struct node *before = NULL;
+	findFaultNodes(root, &node1, &node2, &node3, &before);
+	if (!node2)
+		node2 = node3;
 	int temp = node1->data;
 	node1->data = node2->data;
 	node2->data = temp;
 }
+
